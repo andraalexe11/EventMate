@@ -61,6 +61,7 @@ public class UserService {
         user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setAge(userDTO.getAge());
+        user.setGender(User.Gender.valueOf(userDTO.getGender()));
         return user;
     }
 
@@ -94,9 +95,8 @@ public class UserService {
      * @throws UserNotFoundException if no user with the specified username is found.
      */
     public User findUser(final String username) throws UserNotFoundException {
-        var modifiedUser = userRepository.findAll().stream()
+        return userRepository.findAll().stream()
                 .filter(user -> user.getUsername().equals(username)).findFirst().orElseThrow(() -> new UserNotFoundException("User not found"));
-        return modifiedUser;
     }
 
     /**
@@ -111,6 +111,7 @@ public class UserService {
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setAge(userDTO.getAge());
+        user.setGender(User.Gender.valueOf(userDTO.getGender()));
         return userRepository.save(user);
     }
 
@@ -123,6 +124,11 @@ public class UserService {
     public void delete(final String username) throws UserNotFoundException {
         findUser(username);
         userRepository.delete(findUser(username));
+    }
+
+    public User findById(final int id) throws UserNotFoundException{
+        return userRepository.findAll().stream()
+                .filter(user -> user.getId().equals(id)).findFirst().orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
 }
