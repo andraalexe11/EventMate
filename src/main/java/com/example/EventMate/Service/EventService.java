@@ -5,7 +5,6 @@ import com.example.EventMate.Model.Event;
 import com.example.EventMate.Repository.EventRepository;
 import com.example.EventMate.Exceptions.EventAlreadyExistsException;
 import com.example.EventMate.Exceptions.EventNotFoundException;
-import com.example.EventMate.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +38,15 @@ public class EventService {
      */
     public Event add(final Event event) throws EventAlreadyExistsException, UserNotFoundException {
         checkIfEventAlreadyExists(event.getName());
-        return add(buildEvent(event));
+        var event1 = new Event();
+        event1.setName(event.getName());
+        event1.setDescription(event.getDescription());
+        event1.setLocation(event.getLocation());
+        event1.setDateTime(event.getDateTime());
+        event1.setMax_attendants(event.getMax_attendants());
+        event1.setOrganiser_username(event.getOrganiser_username());
+        eventRepository.save(event1);
+        return event1;
     }
 
     /**
@@ -54,26 +61,6 @@ public class EventService {
         }
     }
 
-    /**
-     * Builds an event object
-     *
-     * @param event the  object to build the event from.
-     * @return the built event.
-     */
-    public Event buildEvent(final Event event) throws UserNotFoundException {
-        var event1 = new Event();
-        event1.setName(event.getName());
-        event1.setDescription(event.getDescription());
-        event1.setLocation(event.getLocation());
-        event1.setDateTime(event.getDateTime());
-        event1.setMax_attendants(event.getMax_attendants());
-
-        // Set the organiser based on the ID
-        User organiser = userService.findById(Math.toIntExact(event.getOrganiser().getId()));
-        event1.setOrganiser(organiser);
-
-        return event1;
-    }
 
 
 
@@ -107,7 +94,7 @@ public class EventService {
     /**
      * Updates the event with the specified name.
      *
-     * @param event the event to be updated.
+     * @param eventnew the event to be updated.
      * @param event the  object containing the new information for the event.
      * @return the updated event.
      */
@@ -118,9 +105,7 @@ public class EventService {
         eventnew.setDateTime(event.getDateTime());
         eventnew.setMax_attendants(event.getMax_attendants());
 
-        // Update organiser if necessary
-        User organiser = userService.findById(Math.toIntExact(event.getOrganiser().getId()));
-        event.setOrganiser(organiser);
+        eventnew.setOrganiser_username(event.getOrganiser_username());
 
         return eventRepository.save(event);
     }
@@ -134,6 +119,10 @@ public class EventService {
     public void delete(final String name) throws EventNotFoundException {
         findEvent(name);
         eventRepository.delete(findEvent(name));
+    }
+
+    public Optional<Event> findbyID(Integer id) throws EventNotFoundException{
+        return eventRepository.findById(id);
     }
 
 

@@ -21,7 +21,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 public class Event {
     @Id
-    @NotNull
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
 
@@ -40,8 +39,6 @@ public class Event {
 
     private Integer max_attendants;
     //preferinte
-    @ManyToOne
-    @JoinColumn(name = "organiser_id")
-    private User organiser = new User();
+    private String organiser_username;
 
 }
