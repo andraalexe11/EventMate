@@ -24,4 +24,5 @@ public class EventParticipation {
     private Event event;
 
     private LocalDateTime joinedAt;
+
 }

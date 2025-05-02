@@ -1,10 +1,8 @@
 package com.example.EventMate.Service;
 
-import com.example.EventMate.DTO.SignupRequest;
 import com.example.EventMate.Model.User;
 import com.example.EventMate.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.EventMate.Exceptions.UserAlreadyExistsException;
@@ -135,21 +133,5 @@ public class UserService {
                 .filter(user -> user.getId().equals(id)).findFirst().orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    public User registerUser( SignupRequest signupRequest) {
-
-        User user = new User();
-        user.setUsername(signupRequest.getUsername());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(signupRequest.getPassword());
-        user.setAge(signupRequest.getAge());
-        user.setGender(signupRequest.getGender());
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new RuntimeException("Email-ul este deja folosit!");
-        }
-
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-        return userRepository.save(user);
-    }
 }
 

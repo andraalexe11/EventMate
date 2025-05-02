@@ -8,7 +8,9 @@ import com.example.EventMate.Exceptions.*;
 import com.example.EventMate.DTO.UserDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,8 @@ public class UserController {
      * @return a list of all users in the database
      */
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN')")
+
     public List<User> getAll() {
         return userService.getAll();
     }
@@ -51,9 +55,11 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<User> add(@Valid @RequestBody UserDTO userDTO) {
         try {
-            return ok(userService.add(userDTO));
+            User addedUser = userService.add(userDTO);  // Aici ar trebui să adaugi utilizatorul
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedUser);  // Returnezi status 201 cu body
         } catch (UserAlreadyExistsException e) {
-            return notFound().build();
+            // Dacă utilizatorul există deja, returnezi un Conflict (409)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
 

@@ -7,6 +7,7 @@ import com.example.EventMate.Repository.UserRepository;
 import com.example.EventMate.Service.EventParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public class EventParticipationController {
     }
 
     @PostMapping("/join/{eventId}")
+    @PreAuthorize("isAuthenticated()")
+
     public ResponseEntity<String> joinEvent(@PathVariable Long eventId, @RequestParam Long userId) {
         User user = userRepository.findById(Math.toIntExact(userId)).orElseThrow(() -> new RuntimeException("User not found"));
         participationService.joinEvent(user, Math.toIntExact(eventId));

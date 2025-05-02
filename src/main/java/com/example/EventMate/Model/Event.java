@@ -11,6 +11,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
@@ -39,6 +41,14 @@ public class Event {
 
     private Integer max_attendants;
     //preferinte
-    private String organiser_username;
+    @ManyToOne
+    @JoinColumn(name = "organiser_id") // Cheie străină către tabelul User
+    private User organiser;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+
+    private Set<EventParticipation> participants = new HashSet<>();
 }
+
+
+

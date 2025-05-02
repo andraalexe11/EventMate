@@ -44,7 +44,7 @@ public class EventService {
         event1.setLocation(event.getLocation());
         event1.setDateTime(event.getDateTime());
         event1.setMax_attendants(event.getMax_attendants());
-        event1.setOrganiser_username(event.getOrganiser_username());
+        event1.setOrganiser(event.getOrganiser());
         eventRepository.save(event1);
         return event1;
     }
@@ -105,7 +105,7 @@ public class EventService {
         eventnew.setDateTime(event.getDateTime());
         eventnew.setMax_attendants(event.getMax_attendants());
 
-        eventnew.setOrganiser_username(event.getOrganiser_username());
+        eventnew.setOrganiser(event.getOrganiser());
 
         return eventRepository.save(event);
     }
@@ -125,5 +125,9 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
+    public List<Event> findbyUsername(String username) throws EventNotFoundException{
+
+        return eventRepository.findByOrganiserUsername(username);
+    }
 
 }

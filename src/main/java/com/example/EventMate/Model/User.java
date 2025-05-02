@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.URL;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
@@ -50,6 +52,9 @@ public class User implements Serializable {
     public enum Gender {
         FEMALE, MALE
     }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventParticipation> eventParticipations = new HashSet<>();
+
 }
 
 
