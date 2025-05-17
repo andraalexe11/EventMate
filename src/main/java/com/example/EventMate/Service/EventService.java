@@ -1,11 +1,14 @@
 package com.example.EventMate.Service;
 
+import com.example.EventMate.DTO.EventDTO;
 import com.example.EventMate.Exceptions.UserNotFoundException;
 import com.example.EventMate.Model.Event;
 import com.example.EventMate.Repository.EventRepository;
 import com.example.EventMate.Exceptions.EventAlreadyExistsException;
 import com.example.EventMate.Exceptions.EventNotFoundException;
+import com.example.EventMate.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.example.EventMate.Model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,17 +20,34 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+
     @Autowired
     private UserService userService;
+
 
     /**
      * Retrieves all events from the repository.
      *
      * @return a list of all available events.
      */
-    public List<Event> getAll() {
-        return eventRepository.findAll();
+    public List<EventDTO> getAllEvents() {
+        return eventRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .toList(); // Mapăm entitățile la DTO-uri
     }
+
+    private EventDTO convertToDTO(Event event) {
+       EventDTO eventDTO = new EventDTO();
+       eventDTO.setName(event.getName());
+       eventDTO.setDescription(event.getDescription());
+       eventDTO.setLocation(event.getLocation());
+       eventDTO.setDateTime(event.getDateTime());
+       eventDTO.setMax_attendants(event.getMax_attendants());
+       eventDTO.setOrganiser(event.getOrganiser().getUsername());
+       return eventDTO;
+    }
+
 
     /**
      * Adds a new event after verifying if an event with the same name already exists.
@@ -36,15 +56,18 @@ public class EventService {
      * @return the added event.
      * @throws EventAlreadyExistsException if an event with the same name already exists.
      */
-    public Event add(final Event event) throws EventAlreadyExistsException, UserNotFoundException {
+    public Event add(final EventDTO event) throws EventAlreadyExistsException, UserNotFoundException {
         checkIfEventAlreadyExists(event.getName());
+        User organiser = userService.findByUsername(event.getOrganiser());
+
         var event1 = new Event();
         event1.setName(event.getName());
         event1.setDescription(event.getDescription());
         event1.setLocation(event.getLocation());
         event1.setDateTime(event.getDateTime());
         event1.setMax_attendants(event.getMax_attendants());
-        event1.setOrganiser(event.getOrganiser());
+        event1.setOrganiser(organiser);
+        event1.setParticipants(null);
         eventRepository.save(event1);
         return event1;
     }
@@ -72,7 +95,7 @@ public class EventService {
      * @return the updated event.
      * @throws EventNotFoundException if the event is not found.
      */
-    public Event update(final String oldName, final Event event) throws EventNotFoundException, UserNotFoundException {
+    public Event update(final String oldName, final EventDTO event) throws EventNotFoundException, UserNotFoundException {
         return updateEvent(findEvent(oldName), event);
     }
 
@@ -98,16 +121,17 @@ public class EventService {
      * @param event the  object containing the new information for the event.
      * @return the updated event.
      */
-    public Event updateEvent(final Event eventnew, final Event event) throws UserNotFoundException {
+    public Event updateEvent(final Event eventnew, final EventDTO event) throws UserNotFoundException {
+        User organiser = userService.findByUsername(event.getOrganiser());
+
         eventnew.setName(event.getName());
         eventnew.setDescription(event.getDescription());
         eventnew.setLocation(event.getLocation());
         eventnew.setDateTime(event.getDateTime());
         eventnew.setMax_attendants(event.getMax_attendants());
-
-        eventnew.setOrganiser(event.getOrganiser());
-
-        return eventRepository.save(event);
+        eventnew.setOrganiser(organiser);
+        eventnew.setParticipants(null);
+        return eventRepository.save(eventnew);
     }
 
     /**

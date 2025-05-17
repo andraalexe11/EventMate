@@ -1,4 +1,5 @@
 package com.example.EventMate.Controller;
+import com.example.EventMate.DTO.EventDTO;
 import com.example.EventMate.Exceptions.EventAlreadyExistsException;
 import com.example.EventMate.Exceptions.EventNotFoundException;
 import com.example.EventMate.Exceptions.UserNotFoundException;
@@ -24,8 +25,8 @@ public class EventController {
      * @return a list of EventDTOs.
      */
     @GetMapping
-    public ResponseEntity<List<Event>> getAllEvents() {
-        List<Event> events = eventService.getAll();
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
+        List<EventDTO> events = eventService.getAllEvents();
         return ResponseEntity.ok(events);
     }
 
@@ -54,7 +55,7 @@ public class EventController {
      * @return the created Event
      */
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) throws UserNotFoundException, EventAlreadyExistsException {
+    public ResponseEntity<Event> createEvent(@RequestBody EventDTO event) throws UserNotFoundException, EventAlreadyExistsException {
         Event createdEvent = eventService.add(event);
         return ResponseEntity.ok(createdEvent);
     }
@@ -68,7 +69,7 @@ public class EventController {
      * @throws EventNotFoundException if the event is not found.
      */
     @PutMapping("/update/{name}")
-    public ResponseEntity<Event> updateEvent(@PathVariable String name, @RequestBody Event event) throws EventNotFoundException, UserNotFoundException {
+    public ResponseEntity<Event> updateEvent(@PathVariable String name, @RequestBody EventDTO event) throws EventNotFoundException, UserNotFoundException {
         Event updatedEvent = eventService.update(name, event);
         return ResponseEntity.ok(updatedEvent);
     }

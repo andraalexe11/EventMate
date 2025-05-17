@@ -25,28 +25,19 @@ public class Event {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Integer id;
-
     @NotBlank(message = "Event name cannot be empty")
     private String name;
-
     @NotBlank(message = "Event description cannot be empty")
     private String description;
-
     @NotBlank(message = "Event location cannot be empty")
     private String location;
-
     @NotNull(message = "Data and time cannot be null")
     private LocalDateTime dateTime;
-
-
     private Integer max_attendants;
-    //preferinte
     @ManyToOne
-    @JoinColumn(name = "organiser_id") // Cheie străină către tabelul User
+    @JoinColumn(name = "organiser_id")
     private User organiser;
-
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
-
     private Set<EventParticipation> participants = new HashSet<>();
 }
 

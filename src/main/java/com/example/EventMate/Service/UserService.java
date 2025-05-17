@@ -18,6 +18,7 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     /**
      * Retrieves all users from the repository.
      *
@@ -81,7 +82,7 @@ public class UserService {
      * Updates a user with the specified username.
      *
      * @param oldUsername the username of the user to be updated.
-     * @param userDTO the DTO object containing the new information for the user.
+     * @param userDTO     the DTO object containing the new information for the user.
      * @return the updated user.
      * @throws UserNotFoundException if the user is not found.
      */
@@ -104,7 +105,7 @@ public class UserService {
     /**
      * Updates a user with the specified username.
      *
-     * @param user the user to be updated.
+     * @param user    the user to be updated.
      * @param userDTO the DTO object containing the new information for the user.
      * @return the updated user.
      */
@@ -128,10 +129,14 @@ public class UserService {
         userRepository.delete(findUser(username));
     }
 
-    public User findById(final int id) throws UserNotFoundException{
+    public User findById(final int id) throws UserNotFoundException {
         return userRepository.findAll().stream()
                 .filter(user -> user.getId().equals(id)).findFirst().orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+    public User findByUsername(final String username) throws UserNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+    }
 }
 
