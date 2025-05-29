@@ -37,7 +37,7 @@ public class EventParticipationController {
     public ResponseEntity<String> joinEvent(@RequestParam String title, @RequestParam String participant) throws UserNotFoundException, EventNotFoundException {
         User user  = userRepository.findByUsername(participant)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + participant));
-        Event event  = eventService.findEvent(title);
+        EventDTO event  = eventService.findEvent(title);
         long eventId = event.getId();
         participationService.joinEvent(user, Math.toIntExact(eventId));
         return ResponseEntity.ok("Joined successfully!");
@@ -50,7 +50,7 @@ public class EventParticipationController {
     public ResponseEntity<String> leaveEvent(@RequestParam String title, @RequestParam String username) throws UserNotFoundException, EventNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Event event = eventService.findEvent(title);
+        EventDTO event = eventService.findEvent(title);
         int eventId = event.getId();
         participationService.leaveEvent(user, eventId);
         return ResponseEntity.ok("Left the event successfully!");

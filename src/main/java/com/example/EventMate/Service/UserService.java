@@ -64,7 +64,7 @@ public class UserService {
         user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setAge(userDTO.getAge());
-        user.setGender(User.Gender.valueOf(userDTO.getGender()));
+        user.setGender(userDTO.getGender());
         return user;
     }
 
@@ -98,8 +98,9 @@ public class UserService {
      * @throws UserNotFoundException if no user with the specified username is found.
      */
     public User findUser(final String username) throws UserNotFoundException {
-        return userRepository.findAll().stream()
+        User foundUser =  userRepository.findAll().stream()
                 .filter(user -> user.getUsername().equals(username)).findFirst().orElseThrow(() -> new UserNotFoundException("User not found"));
+        return foundUser;
     }
 
     /**
@@ -114,7 +115,7 @@ public class UserService {
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         user.setAge(userDTO.getAge());
-        user.setGender(User.Gender.valueOf(userDTO.getGender()));
+        user.setGender(userDTO.getGender());
         return userRepository.save(user);
     }
 

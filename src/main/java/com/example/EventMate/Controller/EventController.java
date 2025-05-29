@@ -37,16 +37,18 @@ public class EventController {
      * @return the Event for the specified name.
      * @throws EventNotFoundException if the event is not found.
      */
-    @GetMapping("/find/{name}")
-    public ResponseEntity<Event> getEventById(@PathVariable String name) throws EventNotFoundException {
-        Event event = eventService.findEvent(name);
+    @GetMapping("/findbyname")
+    public ResponseEntity<EventDTO> getEventByName(@RequestParam String name) throws EventNotFoundException {
+        EventDTO event = eventService.findEvent(name);
         return ResponseEntity.ok(event);
     }
-    @GetMapping("/findbyusername/{username}")
-    public ResponseEntity<List<Event>> getEventbyUsername(@PathVariable String username) throws EventNotFoundException {
-        List<Event> events = eventService.findbyUsername(username);
+    @GetMapping("/findbyorganiser")
+    public ResponseEntity<List<Event>> getEventbyUsername(@RequestParam String organiser) throws EventNotFoundException {
+        List<Event> events = eventService.findbyUsername(organiser);
         return ResponseEntity.ok(events);
     }
+
+
 
     /**
      * Creates a new event.
@@ -68,9 +70,9 @@ public class EventController {
      * @return the updated EventDTO.
      * @throws EventNotFoundException if the event is not found.
      */
-    @PutMapping("/update/{name}")
-    public ResponseEntity<Event> updateEvent(@PathVariable String name, @RequestBody EventDTO event) throws EventNotFoundException, UserNotFoundException {
-        Event updatedEvent = eventService.update(name, event);
+    @PutMapping("/update")
+    public ResponseEntity<EventDTO> updateEvent(@RequestParam String name, @RequestBody EventDTO event) throws EventNotFoundException, UserNotFoundException {
+        EventDTO updatedEvent = eventService.update(name, event);
         return ResponseEntity.ok(updatedEvent);
     }
 
@@ -80,8 +82,8 @@ public class EventController {
      * @param name the name of the event to be deleted.
      * @throws EventNotFoundException if the event is not found.
      */
-    @DeleteMapping("/delete/{name}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable String name) throws EventNotFoundException {
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteEvent(@RequestParam  String name) throws EventNotFoundException {
         eventService.delete(name);
         return ResponseEntity.noContent().build();
     }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -31,22 +32,12 @@ public class EventService {
      * @return a list of all available events.
      */
     public List<EventDTO> getAllEvents() {
-        return eventRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .toList(); // Mapăm entitățile la DTO-uri
+        List<Event> events = eventRepository.findAll(); // Sau orice altă sursă de date
+        return events.stream()
+                .map(EventDTO::new) // Constructorul tău existent
+                .toList();
     }
 
-    private EventDTO convertToDTO(Event event) {
-       EventDTO eventDTO = new EventDTO();
-       eventDTO.setName(event.getName());
-       eventDTO.setDescription(event.getDescription());
-       eventDTO.setLocation(event.getLocation());
-       eventDTO.setDateTime(event.getDateTime());
-       eventDTO.setMax_attendants(event.getMax_attendants());
-       eventDTO.setOrganiser(event.getOrganiser().getUsername());
-       return eventDTO;
-    }
 
 
     /**
@@ -79,7 +70,7 @@ public class EventService {
      * @throws EventAlreadyExistsException if the event already exists.
      */
     public void checkIfEventAlreadyExists(final String name) throws EventAlreadyExistsException {
-        if (eventRepository.findByName(name).isPresent()) {
+        if (eventRepository.findByName(name) != null) {
             throw new EventAlreadyExistsException("Event with this name already exists");
         }
     }
@@ -95,8 +86,8 @@ public class EventService {
      * @return the updated event.
      * @throws EventNotFoundException if the event is not found.
      */
-    public Event update(final String oldName, final EventDTO event) throws EventNotFoundException, UserNotFoundException {
-        return updateEvent(findEvent(oldName), event);
+    public EventDTO update(final String oldName, final EventDTO event) throws EventNotFoundException, UserNotFoundException {
+        return updateEvent(eventRepository.findByName(oldName), event);
     }
 
     /**
@@ -106,12 +97,9 @@ public class EventService {
      * @return the found event.
      * @throws EventNotFoundException if no event with the specified name is found.
      */
-    public Event findEvent(final String name) throws EventNotFoundException {
-        Optional<Event> event = eventRepository.findByName(name);
-        if (event.isEmpty()) {
-            throw new EventNotFoundException("Event not found");
-        }
-        return event.get();
+    public EventDTO findEvent(final String name) throws EventNotFoundException {
+        Event event = eventRepository.findByName(name);
+        return new EventDTO(event);
     }
 
     /**
@@ -121,17 +109,16 @@ public class EventService {
      * @param event the  object containing the new information for the event.
      * @return the updated event.
      */
-    public Event updateEvent(final Event eventnew, final EventDTO event) throws UserNotFoundException {
-        User organiser = userService.findByUsername(event.getOrganiser());
+    public EventDTO updateEvent(final Event eventnew, final EventDTO event) throws UserNotFoundException {
+
 
         eventnew.setName(event.getName());
         eventnew.setDescription(event.getDescription());
         eventnew.setLocation(event.getLocation());
         eventnew.setDateTime(event.getDateTime());
         eventnew.setMax_attendants(event.getMax_attendants());
-        eventnew.setOrganiser(organiser);
-        eventnew.setParticipants(null);
-        return eventRepository.save(eventnew);
+        eventRepository.save(eventnew);
+        return new EventDTO(eventnew);
     }
 
     /**
@@ -141,8 +128,7 @@ public class EventService {
      * @throws EventNotFoundException if no event with the specified name is found.
      */
     public void delete(final String name) throws EventNotFoundException {
-        findEvent(name);
-        eventRepository.delete(findEvent(name));
+        eventRepository.delete(eventRepository.findByName(name));
     }
 
     public Optional<Event> findbyID(Integer id) throws EventNotFoundException{

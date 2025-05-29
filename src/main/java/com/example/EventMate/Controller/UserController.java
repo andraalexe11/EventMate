@@ -11,14 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,6 +36,17 @@ public class UserController {
 
     public List<User> getAll() {
         return userService.getAll();
+    }
+
+    @GetMapping("/getByName")
+    public ResponseEntity<UserDTO> getByName(@RequestParam String name) {
+        try{
+            User user = userService.findUser(name);
+            return ok(new UserDTO(user));
+        } catch (UserNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
@@ -70,8 +74,8 @@ public class UserController {
      * @param userDTO  DTO object that contains the information of the user to be updated.
      * @return the updated user.
      */
-    @PutMapping("/update/{username}")
-    public ResponseEntity<User> update(@PathVariable String username, @RequestBody UserDTO userDTO) {
+    @PutMapping("/update")
+    public ResponseEntity<User> update(@RequestParam String username, @RequestBody UserDTO userDTO) {
         try {
             return ok(userService.update(username, userDTO));
         } catch (UserNotFoundException e) {
@@ -85,8 +89,8 @@ public class UserController {
      * @param username the username of the user to be deleted.
      * @return the deleted user.
      */
-    @DeleteMapping("/delete/{username}")
-    public ResponseEntity<User> delete(@PathVariable String username) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<User> delete(@RequestParam String username) {
         try {
             userService.delete(username);
             return ok().build();
@@ -94,4 +98,6 @@ public class UserController {
             return badRequest().build();
         }
     }
+
+
 }
