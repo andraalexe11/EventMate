@@ -27,14 +27,14 @@ public class EventParticipationService {
 
     public void joinEvent(User user, int eventId) {
         Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new RuntimeException("Event not found"));
+                .orElseThrow(() -> new RuntimeException("Evenimentul nu există sau a fost șters"));
 
         if (participationRepository.existsByUserAndEvent(user, event)) {
-            throw new RuntimeException("Already joined this event");
+            throw new RuntimeException("Deja te-ai alăturat acestui eveniment");
         }
         if (event.getMax_attendants() != null
                 && event.getParticipants().size() >= event.getMax_attendants()) {
-            throw new RuntimeException("Event is full!");
+            throw new RuntimeException("Evenimentul este plin!");
         }
 
         EventParticipation participation = new EventParticipation();
@@ -56,7 +56,7 @@ public class EventParticipationService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
         if (!participationRepository.existsByUserAndEvent(user, event)) {
-            throw new RuntimeException("You are not part of this event");
+            throw new RuntimeException("Nu participi la acest eveniment!");
         }
         Set<EventParticipation> participations = event.getParticipants();
         participationRepository.deleteByUserAndEvent(user, event);

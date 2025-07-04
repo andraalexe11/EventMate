@@ -43,12 +43,17 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
     @GetMapping("/findbyorganiser")
-    public ResponseEntity<List<Event>> getEventbyUsername(@RequestParam String organiser) throws EventNotFoundException {
-        List<Event> events = eventService.findbyUsername(organiser);
+    public ResponseEntity<List<EventDTO>> getEventbyUsername(@RequestParam String organiser) throws EventNotFoundException {
+        List<EventDTO> events = eventService.findbyUsername(organiser);
         return ResponseEntity.ok(events);
     }
 
 
+    @GetMapping("/findbycategory")
+    public ResponseEntity<List<EventDTO>> getEventbyCategory(@RequestParam String category) throws EventNotFoundException {
+        List<EventDTO> events = eventService.getEventsByCategory(category);
+        return ResponseEntity.ok(events);
+    }
 
     /**
      * Creates a new event.

@@ -24,6 +24,7 @@ public class EventDTO {
     private LocalDateTime dateTime;
     private Integer max_attendants;
     private String organiser;
+    private String category;
     private List<String> participants;
 
     public EventDTO(Event event) {
@@ -34,6 +35,7 @@ public class EventDTO {
         this.dateTime = event.getDateTime();
         this.max_attendants = event.getMax_attendants();
         this.organiser = event.getOrganiser().getUsername();
+        this.category = event.getCategory();
         this.participants = event.getParticipants() != null ?
                 event.getParticipants().stream()
                         .map(participant -> participant.getUser().getUsername())

@@ -1,5 +1,6 @@
 package com.example.EventMate.Controller;
 
+import com.example.EventMate.Exceptions.UserAlreadyExistsException;
 import com.example.EventMate.Repository.UserRepository;
 import com.example.EventMate.Service.KeycloakService;
 import com.example.EventMate.DTO.SignUpRequest;
@@ -27,6 +28,9 @@ public class SignupController {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
             keycloakService.createUser(signupRequest.getUsername(), signupRequest.getEmail(), signupRequest.getPassword());
+            if(userRepository.findByUsername(signupRequest.getUsername()).isPresent()) {
+                throw new UserAlreadyExistsException("Există deja un utilizator cu username-ul " + signupRequest.getUsername());
+            }
             User user = new User();
             user.setUsername(signupRequest.getUsername());
             user.setEmail(signupRequest.getEmail());
@@ -38,6 +42,8 @@ public class SignupController {
         } catch (RuntimeException ex) {
             // În cazul în care apare o eroare, returnăm răspuns cu cod 400
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Eroare: " + ex.getMessage());
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 }

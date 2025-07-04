@@ -23,8 +23,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-
-
+    
     @NotBlank(message = "Username cannot be empty")
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
@@ -32,8 +31,7 @@ public class User implements Serializable {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 8, message = "Password must have at least 8 characters")
-   // @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            //message = "Password must contain at least one lowercase letter, one uppercase letter, one special character and one digit")
+
     private String password;
 
     @NotBlank(message = "Email cannot be empty")

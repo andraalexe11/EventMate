@@ -10,6 +10,7 @@ import com.example.EventMate.Model.User;
 import com.example.EventMate.Repository.UserRepository;
 import com.example.EventMate.Service.EventParticipationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +35,24 @@ public class EventParticipationController {
     @PostMapping("/join")
     @PreAuthorize("isAuthenticated()")
 
-    public ResponseEntity<String> joinEvent(@RequestParam String title, @RequestParam String participant) throws UserNotFoundException, EventNotFoundException {
+    public ResponseEntity<String> joinEvent(@RequestParam String title, @RequestParam String participant) throws Exception {
+        try{
         User user  = userRepository.findByUsername(participant)
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + participant));
         EventDTO event  = eventService.findEvent(title);
         long eventId = event.getId();
-        participationService.joinEvent(user, Math.toIntExact(eventId));
-        return ResponseEntity.ok("Joined successfully!");
+
+            participationService.joinEvent(user, Math.toIntExact(eventId));
+
+            return ResponseEntity.ok("Joined successfully!");
+
+    } catch (UserNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error: " + e.getMessage());
+    }
     }
 
 

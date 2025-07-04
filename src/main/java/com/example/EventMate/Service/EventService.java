@@ -40,6 +40,12 @@ public class EventService {
 
 
 
+    public List<EventDTO> getEventsByCategory(String category) {
+        List<Event> events = eventRepository.findEventByCategory(category);
+        return events.stream()
+                .map(EventDTO::new) // Constructorul tău existent
+                .toList();
+    }
     /**
      * Adds a new event after verifying if an event with the same name already exists.
      *
@@ -58,6 +64,7 @@ public class EventService {
         event1.setDateTime(event.getDateTime());
         event1.setMax_attendants(event.getMax_attendants());
         event1.setOrganiser(organiser);
+        event1.setCategory(event.getCategory());
         event1.setParticipants(null);
         eventRepository.save(event1);
         return event1;
@@ -117,6 +124,7 @@ public class EventService {
         eventnew.setLocation(event.getLocation());
         eventnew.setDateTime(event.getDateTime());
         eventnew.setMax_attendants(event.getMax_attendants());
+        eventnew.setCategory(event.getCategory());
         eventRepository.save(eventnew);
         return new EventDTO(eventnew);
     }
@@ -135,9 +143,13 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public List<Event> findbyUsername(String username) throws EventNotFoundException{
+    public List<EventDTO> findbyUsername(String username) throws EventNotFoundException{
 
-        return eventRepository.findByOrganiserUsername(username);
+        List<Event> events =  eventRepository.findByOrganiserUsername(username);
+        return events.stream()
+                .map(EventDTO::new)
+                .toList();
+
     }
 
 }

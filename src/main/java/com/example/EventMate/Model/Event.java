@@ -34,6 +34,8 @@ public class Event {
     @NotNull(message = "Data and time cannot be null")
     private LocalDateTime dateTime;
     private Integer max_attendants;
+    @NotNull(message = "Event category cannot be empty")
+    private String category;
     @ManyToOne
     @JoinColumn(name = "organiser_id")
     private User organiser;
